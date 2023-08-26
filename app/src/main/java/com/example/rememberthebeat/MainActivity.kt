@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
                     composable("game_screen"){
                         GameScreen(navController = navController)
                     }
-                    composable("end_screen") {
+                    composable("summary_screen") {
                         SummaryScreen(navController = navController)
                     }
                 }

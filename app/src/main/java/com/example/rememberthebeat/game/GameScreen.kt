@@ -1,14 +1,11 @@
 package com.example.rememberthebeat.game
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
@@ -36,8 +33,8 @@ fun GameScreen(
     val audioSource = MediaItem.fromUri("android.resource://${context}/${R.raw.ogg120trimmed}")
     exoPlayer.apply {
         setMediaItem(audioSource)
-        repeatMode = Player.REPEAT_MODE_ONE
         prepare()
+        repeatMode = Player.REPEAT_MODE_ONE
         play()
     }
     val lifecycleEvent = rememberLifecycleEvent()
@@ -63,11 +60,11 @@ fun GameScreen(
             clickCount == 18 -> "the backing track is going to fade out\n3"
             clickCount == 19 -> "the backing track is going to fade out\n2"
             clickCount == 20 -> "the backing track is going to fade out\n1"
-            clickCount == 35 -> "the backing track is going to fade out\n5"
-            clickCount == 36 -> "the backing track is going to fade out\n4"
-            clickCount == 37 -> "the backing track is going to fade out\n3"
-            clickCount == 38 -> "the backing track is going to fade out\n2"
-            clickCount == 39 -> "the backing track is going to fade out\n1"
+            clickCount == 35 -> "5"
+            clickCount == 36 -> "4"
+            clickCount == 37 -> "3"
+            clickCount == 38 -> "2"
+            clickCount == 39 -> "1"
             else -> ""
         }
         val vol:Float = when {
@@ -82,7 +79,7 @@ fun GameScreen(
         Button(
             onClick = {
                 viewModel.incrementClickCount()
-                exoPlayer.volume = 1F//vol
+                exoPlayer.volume = vol
                 if (clickCount==20){
                     viewModel.setStart(System.currentTimeMillis())
                 }
@@ -94,11 +91,14 @@ fun GameScreen(
             shape = RectangleShape) {
         }
         Text(text = textT)
-        if (clickCount == 41){
-            viewModel.calculateScores()
+        if (clickCount == 20){
+            exoPlayer.stop()
+            exoPlayer.release()
         }
-        if (clickCount > 39){
-            Text(text = viewModel.scores.toString())
+        if (clickCount == 40 && viewModel.trigger){
+            viewModel.flip()
+            viewModel.calculateScores()
+            navController.navigate("summary_screen/${viewModel.sendThis}")
         }
     }
 }

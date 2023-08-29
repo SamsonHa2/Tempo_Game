@@ -1,9 +1,7 @@
 package com.example.rememberthebeat.game
 
-import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.exoplayer.ExoPlayer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,6 +20,8 @@ class GameViewModel @Inject constructor(): ViewModel(){
     var clickTimes = mutableListOf<Long>()
     var scores = mutableListOf<Int>()
     var correctTimes = mutableListOf<Long>()
+    var sendThis = "50,-50"
+    var trigger = true
     fun addClickTime(time: Long){
         clickTimes.add(time)
     }
@@ -32,7 +32,13 @@ class GameViewModel @Inject constructor(): ViewModel(){
     }
     fun calculateScores(){
         for (i in 1 until clickTimes.size){
-            scores.add((clickTimes[i] - correctTimes[i]).toInt())
+            val timeDiff = clickTimes[i] - correctTimes[i]
+            val score = (timeDiff/10).coerceAtMost(50).coerceAtLeast(-50)
+            scores.add(score.toInt())
         }
+        sendThis = scores.joinToString(",")
+    }
+    fun flip(){
+        trigger = false
     }
 }

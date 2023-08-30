@@ -1,18 +1,24 @@
 package com.example.rememberthebeat.start
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -20,7 +26,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.rememberthebeat.ui.theme.RememberTheBeatTheme
-import kotlin.system.exitProcess
 
 @Composable
 fun StartScreen(
@@ -28,60 +33,57 @@ fun StartScreen(
 ){
     Box(modifier = Modifier
         .fillMaxSize()
-        .background(Color.LightGray)
+        .background(Color.Cyan)
     ){
 
         Column(
-            modifier = Modifier
-                .fillMaxWidth(0.75F)
-                .fillMaxHeight(0.5F)
-                .align(Alignment.Center)
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = CenterHorizontally
         ) {
             Text(
-                text = "PLACEHOLDER",
+                text = "Got Rhythm?",
                 fontSize = 42.sp,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
+            )
+            Text(
+                text = "Can you keep the rhythm when the beat drops out?",
+                fontSize = 18.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(2f)
+                    .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
+            )
+            Text(
+                text = "turn up your volume and hit play to begin",
+                fontSize = 14.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 20.dp, bottom = 40.dp)
             )
             Button(
                 onClick = { navController.navigate("game_screen") },
+                shape = CircleShape,
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Magenta),
                 modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f)
-                    .padding(10.dp)
+                    .size(144.dp)
+                    .align(CenterHorizontally)
             ) {
-                Text(
-                    text = "Start",
-                    fontSize = 24.sp
-                )
+                Column {
+                    Text(
+                        text = "▶",
+                        fontSize = 84.sp,
+                        textAlign = TextAlign.End
+                    )
+                    Spacer(modifier = Modifier.height(20.dp).weight(1F))
+                }
             }
-            Button(
-                onClick = { /*TODO*/ },
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f)
-                    .padding(10.dp)
-            ) {
-                Text(
-                    text = "Options",
-                    fontSize = 24.sp
-                )
-            }
-            Button(
-                onClick = { exitProcess(0) },
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f)
-                    .padding(10.dp)
-            ) {
-                Text(
-                    text = "Exit",
-                    fontSize = 24.sp
-                )
-
-            }
+            Spacer(modifier = Modifier.height(100.dp))
         }
     }
 }

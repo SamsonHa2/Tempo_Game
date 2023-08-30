@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -60,11 +61,12 @@ fun GameScreen(
             clickCount == 18 -> "the backing track is going to fade out\n3"
             clickCount == 19 -> "the backing track is going to fade out\n2"
             clickCount == 20 -> "the backing track is going to fade out\n1"
-            clickCount == 35 -> "5"
-            clickCount == 36 -> "4"
-            clickCount == 37 -> "3"
-            clickCount == 38 -> "2"
-            clickCount == 39 -> "1"
+            clickCount in 21..34 -> "keep playing!"
+            clickCount == 35 -> "nearly there! you can stop in\n5"
+            clickCount == 36 -> "nearly there! you can stop in\n4"
+            clickCount == 37 -> "nearly there! you can stop in\n3"
+            clickCount == 38 -> "nearly there! you can stop in\n2"
+            clickCount == 39 -> "nearly there! you can stop in\n1"
             else -> ""
         }
         val vol:Float = when {
@@ -90,7 +92,7 @@ fun GameScreen(
             modifier = Modifier.fillMaxSize(),
             shape = RectangleShape) {
         }
-        Text(text = textT)
+        Text(text = textT, modifier = Modifier.fillMaxSize(), textAlign = TextAlign.Center)
         if (clickCount == 20){
             exoPlayer.stop()
             exoPlayer.release()

@@ -44,90 +44,56 @@ fun GameScreen(
     navController: NavController,
     viewModel: GameViewModel = hiltViewModel()
     ){
-    val game = remember { mutableStateOf(true) }
-    val context = LocalContext.current
-    val exoPlayer = remember { ExoPlayer.Builder(context).build() }
-    val audioSource = MediaItem.fromUri("android.resource://${context}/${R.raw.ogg120trimmed}")
-    exoPlayer.apply {
-        setMediaItem(audioSource)
-        prepare()
-        repeatMode = Player.REPEAT_MODE_ONE
-        play()
-    }
-    val lifecycleEvent = rememberLifecycleEvent()
-    LaunchedEffect(lifecycleEvent) {
-        if (lifecycleEvent == Lifecycle.Event.ON_PAUSE) {
-            exoPlayer.stop()
+    if (viewModel.state.value == "game"){
+        val context = LocalContext.current
+        val exoPlayer = remember { ExoPlayer.Builder(context).build() }
+        val audioSource = MediaItem.fromUri("android.resource://${context}/${R.raw.ogg120trimmed}")
+        exoPlayer.apply {
+            setMediaItem(audioSource)
+            prepare()
+            repeatMode = Player.REPEAT_MODE_ONE
+            play()
         }
-        else if (lifecycleEvent == Lifecycle.Event.ON_STOP) {
-            exoPlayer.stop()
+        val lifecycleEvent = rememberLifecycleEvent()
+        LaunchedEffect(lifecycleEvent) {
+            when (lifecycleEvent) {
+                Lifecycle.Event.ON_PAUSE -> {
+                    exoPlayer.stop()
+                }
+                Lifecycle.Event.ON_STOP -> {
+                    exoPlayer.stop()
+                }
+                Lifecycle.Event.ON_RESUME -> {
+                    exoPlayer.play()
+                }
+                Lifecycle.Event.ON_DESTROY -> {
+                    exoPlayer.stop()
+                    exoPlayer.release()
+                }
+                else -> {}
+            }
         }
-        else if (lifecycleEvent == Lifecycle.Event.ON_RESUME) {
-            exoPlayer.play()
-        }
-        else if (lifecycleEvent == Lifecycle.Event.ON_DESTROY){
-            exoPlayer.stop()
-            exoPlayer.release()
-        }
-    }
-    if (game.value){
         Surface(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            val clickCount by viewModel.clickCount.collectAsState()
-            val textT:String = when {
-                clickCount < 4 -> "tap along to the beat"
-                clickCount in 4..11 -> "that's great!\n\nnow we'll see how well you can play on your own."
-                clickCount in 12..15 -> "the backing track is going to fade out"
-                clickCount == 16 -> "the backing track is going to fade out\n\n5"
-                clickCount == 17 -> "the backing track is going to fade out\n\n4"
-                clickCount == 18 -> "the backing track is going to fade out\n\n3"
-                clickCount == 19 -> "the backing track is going to fade out\n\n2"
-                clickCount == 20 -> "the backing track is going to fade out\n\n1"
-                clickCount in 21..34 -> "keep playing!"
-                clickCount == 35 -> "nearly there! you can stop in\n\n5"
-                clickCount == 36 -> "nearly there! you can stop in\n\n4"
-                clickCount == 37 -> "nearly there! you can stop in\n\n3"
-                clickCount == 38 -> "nearly there! you can stop in\n\n2"
-                clickCount == 39 -> "nearly there! you can stop in\n\n1"
-                else -> ""
-            }
-            val vol:Float = when {
-                clickCount < 16 -> 1F
-                clickCount == 16 -> 0.8F
-                clickCount == 17 -> 0.6F
-                clickCount == 18 -> 0.4F
-                clickCount == 19 -> 0.2F
-                else -> 0F
-            }
 
             Button(
                 onClick = {
                     viewModel.incrementClickCount()
-                    exoPlayer.volume = vol
-                    if (clickCount==20){
-                        viewModel.setStart(System.currentTimeMillis())
-                    }
-                    if (clickCount in 21..40){
-                        viewModel.addClickTime(System.currentTimeMillis())
-                    }
+                    viewModel.updateGameState()
+                    exoPlayer.volume = viewModel.getGameVolume()
                 },
                 modifier = Modifier.fillMaxSize(),
                 shape = RectangleShape,
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Cyan)
             ) {
-                Text(text = textT+"\n\n\n\n\n\n\n\n\n\n", fontSize = 24.sp, lineHeight = 28.sp, textAlign = TextAlign.Center)
+                Text(text = viewModel.getGameText()+"\n\n\n\n\n\n\n\n\n\n", fontSize = 24.sp, lineHeight = 28.sp, textAlign = TextAlign.Center)
                 Spacer(modifier = Modifier.height(30.dp))
-            }
-            if (clickCount == 40 && viewModel.trigger){
-                viewModel.flip()
-                viewModel.calculateScores()
-                game.value = false
             }
         }
     }
-    else{
+    else if (viewModel.state.value == "summary"){
         Summary(scores = viewModel.scores, navController = navController)
     }
 

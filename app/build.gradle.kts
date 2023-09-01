@@ -80,6 +80,11 @@ dependencies {
     kapt ("androidx.hilt:hilt-compiler:1.0.0")
     implementation ("androidx.hilt:hilt-navigation-compose:1.1.0-alpha01")
 
-    //exoplayer
+    // Exoplayer
     implementation("androidx.media3:media3-exoplayer:1.1.1")
+
+    // Room
+    implementation ("androidx.room:room-common:2.5.2")
+    implementation ("androidx.room:room-ktx:2.5.2")
+    kapt("androidx.room:room-compiler:2.5.2")
 }

@@ -94,7 +94,12 @@ fun GameScreen(
         }
     }
     else if (viewModel.state.value == "summary"){
-        Summary(scores = viewModel.scores, navController = navController)
+        Summary(
+            scores = viewModel.scores,
+            totalScore = viewModel.getTotalScore(),
+            highScore = viewModel.getHighScore(),
+            navController = navController
+        )
     }
 
 }
@@ -102,6 +107,8 @@ fun GameScreen(
 @Composable
 fun Summary(
     scores: List<Int>,
+    totalScore: Int,
+    highScore: Int,
     navController: NavController
 ){
     Box(
@@ -118,7 +125,7 @@ fun Summary(
         ) {
             Row {
                 Text(
-                    text = scores.sumOf{ 50 - abs(it) }.toString() + "\nYour Score",
+                    text = "$totalScore\nYour Score",
                     textAlign = TextAlign.Center,
                     fontSize = 24.sp,
                     modifier = Modifier.weight(1F)
@@ -130,7 +137,7 @@ fun Summary(
                         .background(Color.Black)
                 )
                 Text(
-                    text = scores.sumOf{ 50 - abs(it) }.toString() + "\nHigh Score",
+                    text = "$highScore\nHigh Score",
                     textAlign = TextAlign.Center,
                     fontSize = 24.sp,
                     modifier = Modifier.weight(1F)

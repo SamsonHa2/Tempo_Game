@@ -1,12 +1,20 @@
 package com.example.rememberthebeat.game
 
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.rememberthebeat.data.ScoreDao
+import com.example.rememberthebeat.data.models.HighScore
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.abs
 
 @HiltViewModel
-class GameViewModel @Inject constructor(): ViewModel(){
+class GameViewModel @Inject constructor(
+    private val dao: ScoreDao
+): ViewModel(){
     private var clickCount = 0
     private var clickTimes = mutableListOf<Long>()
     private var _scores = mutableListOf<Int>()
@@ -16,6 +24,8 @@ class GameViewModel @Inject constructor(): ViewModel(){
     private var gameText = mutableStateOf("tap along to the beat")
     private var gameVolume = 1F
     var state = mutableStateOf("game")
+    private var totalScore = 0
+    private var highScore = mutableIntStateOf(0)
     fun incrementClickCount() {
         clickCount++
     }
@@ -37,6 +47,11 @@ class GameViewModel @Inject constructor(): ViewModel(){
             _scores.add(score.toInt())
         }
     }
+
+    private fun setTotalScore(){
+        totalScore = scores.sumOf{ 50 - abs(it) }
+    }
+
     fun updateGameState(){
         when (clickCount) {
             in 0 .. 3 -> {
@@ -98,7 +113,12 @@ class GameViewModel @Inject constructor(): ViewModel(){
                 gameText.value = ""
                 addClickTime(System.currentTimeMillis())
                 calculateScores()
+                setTotalScore()
                 state.value = "summary"
+                viewModelScope.launch {
+                    dao.upsertHighScore(HighScore(totalScore))
+                    highScore.intValue = dao.getHighestScore().score
+                }
             }
         }
     }
@@ -108,5 +128,13 @@ class GameViewModel @Inject constructor(): ViewModel(){
 
     fun getGameVolume(): Float {
         return gameVolume
+    }
+
+    fun getTotalScore(): Int {
+        return totalScore
+    }
+
+    fun getHighScore():Int{
+        return highScore.intValue
     }
 }

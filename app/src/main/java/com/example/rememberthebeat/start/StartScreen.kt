@@ -43,8 +43,8 @@ fun StartScreen(
             horizontalAlignment = CenterHorizontally
         ) {
             Text(
-                text = "Got Rhythm?",
-                fontSize = 42.sp,
+                text = "GOT RHYTHM?",
+                fontSize = 36.sp,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
